@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  HR_ADMIN
+  EMPLOYEE
+}
+
+enum TrainingStatus {
+  DRAFT
+  PUBLISHED
+  COMPLETED
+  CANCELLED
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  WAITLISTED
+  CANCELLED
+}
+
+enum NotificationType {
+  ENROLLMENT_CONFIRMATION
+  WAITLIST_UPDATE
+  FEEDBACK_REMINDER
+  CERTIFICATE_READY
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments   Enrollment[]
+  attendance    Attendance[]
+  feedback      Feedback[]
+  certificates  Certificate[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model TrainingProgram {
+  id          String        @id @default(cuid())
+  title       String
+  trainer     String
+  date        DateTime
+  description String
+  maxSeats    Int
+  status      TrainingStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  enrollments  Enrollment[]
+  attendance   Attendance[]
+  feedback     Feedback[]
+  certificates Certificate[]
+
+  @@map("training_programs")
+}
+
+model Enrollment {
+  id         String           @id @default(cuid())
+  userId     String
+  trainingId String
+  status     EnrollmentStatus @default(ENROLLED)
+  enrolledAt DateTime         @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  training TrainingProgram @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trainingId])
+  @@map("enrollments")
+}
+
+model Attendance {
+  id         String   @id @default(cuid())
+  userId     String
+  trainingId String
+  isPresent  Boolean  @default(false)
+  markedAt   DateTime @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  training TrainingProgram @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trainingId])
+  @@map("attendance")
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+  userId      String
+  trainingId  String
+  rating      Int      // 1-5 rating
+  comments    String?
+  submittedAt DateTime @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  training TrainingProgram @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trainingId])
+  @@map("feedback")
+}
+
+model Certificate {
+  id          String   @id @default(cuid())
+  userId      String
+  trainingId  String
+  downloadUrl String?
+  generatedAt DateTime @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  training TrainingProgram @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trainingId])
+  @@map("certificates")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

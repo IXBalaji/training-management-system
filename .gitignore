@@ -1,0 +1,56 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+dist-ssr/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local environment variables
+.env
+.env.*.local
+*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing
+coverage/
+*.lcov
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional: if you're using TurboRepo
+turbo/
+
+# Optional: if you're using Firebase
+.firebase/
+.firebaserc
+
+# Optional: if using next-export
+exported/
+
+# Optional: custom static assets cache
+.cache/
