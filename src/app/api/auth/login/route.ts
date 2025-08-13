@@ -9,13 +9,28 @@ export async function POST(request: NextRequest) {
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
-const token = await generateToken({
-      userId: 1,
-      email: email,
-      role: 'HR_ADMIN',
+
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
     })
-    return token;
-    
+
+    if (!user) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    // Verify password
+    const isPasswordValid = await verifyPassword(password, user.password)
+    if (!isPasswordValid) {
+      return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+    }
+
+    // Generate token with actual user data
+    const token = await generateToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    })
 
     const response = NextResponse.json({
       success: true,
