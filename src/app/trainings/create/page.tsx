@@ -1,77 +1,94 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Navbar } from '@/components/layout/navbar'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ArrowLeft, Save, Send } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Navbar } from "@/components/layout/navbar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Save, Send } from "lucide-react";
+import Link from "next/link";
 
 export default function CreateTrainingPage() {
   const [formData, setFormData] = useState({
-    title: '',
-    trainer: '',
-    date: '',
-    description: '',
-    maxSeats: ''
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
+    title: "",
+    trainer: "",
+    date: "",
+    description: "",
+    maxSeats: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent, publish = false) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     try {
-      const response = await fetch('/api/trainings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/trainings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
           maxSeats: parseInt(formData.maxSeats),
           date: new Date(formData.date).toISOString(),
-          status: publish ? 'PUBLISHED' : 'DRAFT'
+          status: publish ? "PUBLISHED" : "DRAFT",
         }),
-      })
+      });
 
       if (response.ok) {
-        router.push('/trainings')
+        router.push("/trainings");
       } else {
-        const data = await response.json()
-        setError(data.error || 'Failed to create training')
+        const data = await response.json();
+        setError(data.error || "Failed to create training");
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8">
         <div className="mb-8">
-          <Link href="/trainings" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mb-4">
+          <Link
+            href="/trainings"
+            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mb-4"
+          >
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Trainings</span>
           </Link>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Training Program</h1>
-          <p className="text-gray-600">Set up a new training session for your team</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Create Training Program
+          </h1>
+          <p className="text-gray-600">
+            Set up a new training session for your team
+          </p>
         </div>
 
         <div className="max-w-2xl">
           <Card>
             <CardHeader>
               <CardTitle>Training Details</CardTitle>
-              <CardDescription>Fill in the information for your new training program</CardDescription>
+              <CardDescription>
+                Fill in the information for your new training program
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-6">
@@ -82,7 +99,10 @@ export default function CreateTrainingPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label htmlFor="title" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="title"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Training Title *
                   </label>
                   <Input
@@ -96,7 +116,10 @@ export default function CreateTrainingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="trainer" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="trainer"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Trainer Name *
                   </label>
                   <Input
@@ -111,7 +134,10 @@ export default function CreateTrainingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label htmlFor="date" className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="date"
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Date & Time *
                     </label>
                     <Input
@@ -125,7 +151,10 @@ export default function CreateTrainingPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="maxSeats" className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="maxSeats"
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Max Seats *
                     </label>
                     <Input
@@ -142,7 +171,10 @@ export default function CreateTrainingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="description" className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="description"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Description *
                   </label>
                   <textarea
@@ -188,5 +220,5 @@ export default function CreateTrainingPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
