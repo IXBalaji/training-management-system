@@ -1,58 +1,67 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Star, Send } from 'lucide-react'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Star, Send } from "lucide-react";
 
 interface FeedbackFormProps {
-  trainingId: string
-  trainingTitle: string
+  trainingId: string;
+  trainingTitle: string;
 }
 
-export default function FeedbackForm({ trainingId, trainingTitle }: FeedbackFormProps) {
-  const [rating, setRating] = useState(0)
-  const [hoveredRating, setHoveredRating] = useState(0)
-  const [comments, setComments] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
+export default function FeedbackForm({
+  trainingId,
+  trainingTitle,
+}: FeedbackFormProps) {
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [comments, setComments] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (rating === 0) {
-      setError('Please provide a rating')
-      return
+      setError("Please provide a rating");
+      return;
     }
 
-    setIsLoading(true)
-    setError('')
+    setIsLoading(true);
+    setError("");
 
     try {
-      const response = await fetch('/api/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           trainingId,
           rating,
-          comments: comments.trim() || null
+          comments: comments.trim() || null,
         }),
-      })
+      });
 
       if (response.ok) {
-        router.refresh()
+        router.refresh();
       } else {
-        const data = await response.json()
-        setError(data.error || 'Failed to submit feedback')
+        const data = await response.json();
+        setError(data.error || "Failed to submit feedback");
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card>
@@ -87,22 +96,23 @@ export default function FeedbackForm({ trainingId, trainingTitle }: FeedbackForm
                   <Star
                     className={`h-8 w-8 transition-colors ${
                       star <= (hoveredRating || rating)
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-300 hover:text-yellow-200'
+                        ? "text-yellow-400 fill-current"
+                        : "text-gray-300 hover:text-yellow-200"
                     }`}
                   />
                 </button>
               ))}
               {rating > 0 && (
-                <span className="ml-2 text-sm text-gray-600">
-                  ({rating}/5)
-                </span>
+                <span className="ml-2 text-sm text-gray-600">({rating}/5)</span>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="comments" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="comments"
+              className="text-sm font-medium text-gray-700"
+            >
               Additional Comments (Optional)
             </label>
             <textarea
@@ -132,5 +142,5 @@ export default function FeedbackForm({ trainingId, trainingTitle }: FeedbackForm
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
